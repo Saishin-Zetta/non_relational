@@ -1,0 +1,25 @@
+{
+  "name": "non_relational",
+  "version": "1.0.0",
+  "description": "using a no sql database to complete the assignment",
+  "main": "serve.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saishin-Zetta/non_relational.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Saishin-Zetta/non_relational/issues"
+  },
+  "homepage": "https://github.com/Saishin-Zetta/non_relational#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.1.0",
+    "mongoose": "^7.0.0",
+    "nodemon": "^2.0.20"
+  }
+}
