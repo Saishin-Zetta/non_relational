@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -20,21 +20,25 @@ const userSchema = new mongoose.Schema({
   friends: [{
     type: Schema.Types.ObjectId, ref: 'User' 
   }],
+  //  $push
 },
 {
   toJSON: {
-    getters: true
+    getters: true,
+    virtuals: true
   },
   id: false
 }
 );
 
-
-const User = model('user', userSchema)
-
-User.virtual('friendCount').get(function () {
+userSchema.virtual('friendCount').get(function () {
   return this.friends.length;
 });
+
+// Think of this like a patent
+const User = model('User', userSchema)
+
+
 
 
 

@@ -3,6 +3,7 @@ const mongodb = require('mongodb').MongoClient;
 // We import the ObjectId() function from MongoDB
 const ObjectId = require('mongodb').ObjectId;
 const db = require('./config/connection')
+const routes = require('./routes')
 
 const app = express();
 const port = 3001;
