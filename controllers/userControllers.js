@@ -1,4 +1,5 @@
-const { User, Thought } = require('../../models')
+const { User, Thought } = require('../models');
+const { deleteOne } = require('../models/user');
 
 
 module.exports = {
@@ -62,60 +63,67 @@ module.exports = {
 
     // delete a User
     deleteUser(req, res) {
-        User.findOneAndRemove(
-            { _id: req.params.userId })
-            .then((user) => {
-                if (!user) {
-                    Thought.findOneAndUpdate(
-                        { username: req.params.userId },
-                        { $pull: { username: req.params.userId } },
-                        { new: true }
-                    )
-                }
+        deleteOne()
+            .then(({ thoughts }) => {
+                return Thought.updateMany(
+                    { _id: { $in: thoughts } },
+                    { $pull: { reactions: { username: req.params.userId } } },
+                    { new: true }
+                );
+            })
+            .then(() => {
+                return User.findOneAndDelete({ _id: req.params.userId });
             })
             .then((user) => {
-                if (!thought) {
-                    res.status(404).json({ message: 'User deleted, but no thoughts found' })
+                if (!user) {
+                    res.status(404).json({ message: 'No user found with that ID' });
                 }
-                res.json({ message: 'User was successfully deleted' })
+                else {
+                    res.json({ message: 'User was successfully deleted' })
+                }
             })
             .catch((err) => {
                 console.log(err);
                 res.status(500).json(err);
-            })
+            });
     },
 
     // add friends
     addFriend(req, res) {
-        const adding = User.findOneAndUpdate(
+        User.findOneAndUpdate(
             { _id: req.params.userId },
-            { friends: req.params.friendId },
-            // useFindAndModify allows us to use the native function instead of deprecated findAndModify()
-            { new: true, useFindAndModify: false },
+            { $push: { friends: req.params.friendId } },
+            { new: true },
         )
-            .then((adding) => {
-                if (!adding) {
+            .then((user) => {
+                if (!user) {
                     res.status(404).json({ message: 'User cannot add friend, because they or the user they want to add does not exist.' })
                 }
-                res.json({ message: 'User was successfully added as a friend' })
+                res.json({ message: 'Friend was successfully added' })
             })
 
     },
 
     // remove friends
     removeFriend(req, res) {
-        const current_user = User.findById(req.params.userId)
-        // populate the friends portion of User
-        .populate('friends')
-        current_user.findOneAndRemove(
-            { friend: req.params.friendId },
-            { new: true, useFindAndModify: false }
-        )
-        .then((current_user) => {
-            if (!current_user) {
-                res.status(404).json({ message: 'User cannot remove friend, because they or the user they want to add does not exist.' })
-            }
-            res.json({ message: 'User was successfully removed as a friend' })
-        })
+        User.findById(req.params.userId)
+            // calling the found user current_user and passing it through the process
+            .then((current_user) => {
+                if (!current_user) {
+                    res.status(404).json({ message: 'User not found' });
+                }
+                else {
+                    // pull is what allows us to take something out of an array. In this case, our friends_list
+                    current_user.friends.pull(req.params.friendId)
+                    return current_user.save()
+                }
+            })
+            .then((current_user) => {
+                res.json({ message: 'Friend was successfully removed' });
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     }
-}
+} 
