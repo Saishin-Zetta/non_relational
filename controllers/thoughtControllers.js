@@ -1,4 +1,5 @@
-const { User, Thought, Reaction } = require('../models')
+const { User, Thought, reactionSchema } = require('../models')
+
 
 module.exports = {
 
@@ -28,7 +29,7 @@ module.exports = {
     },
 
 
-    // Create a new thought
+    // Create a new thought 
     createThought(req, res) {
         try {
             // Create a new thought using the request body
@@ -40,7 +41,10 @@ module.exports = {
             if (!currentUser) {
                 return res.status(404).json({ message: "User not found" });
             }
-
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json(err);
+        }            
             // Push the thought's _id to the user's thoughts array
             currentUser.thoughts.push(newThought._id);
 
@@ -49,10 +53,6 @@ module.exports = {
 
             // Return the created thought
             return res.status(201).json(newThought);
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json(err);
-        }
     },
 
     // updating thought
@@ -61,7 +61,7 @@ module.exports = {
             { _id: req.params.thoughtId },
             { $set: req.body },
             { runValidators: true, new: true }
-        )
+
             .then((thought) => {
                 if (!thought) {
                     res.status(404).json({ message: 'No thought with this ID exist' })
@@ -72,8 +72,8 @@ module.exports = {
                 console.log(err);
                 res.status(500).json(err);
             })
-    },
-
+    )},
+ 
     // delete thought
     deleteThought(req, res) {
         Thought.findByIdAndDelete(req.params.thoughtId)

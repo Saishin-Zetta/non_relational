@@ -1,5 +1,5 @@
-const { User, Thought } = require('../models');
-const { deleteOne } = require('../models/user');
+const { User, Thought } = require('../models'); 
+
 
 
 module.exports = {
@@ -63,7 +63,7 @@ module.exports = {
 
     // delete a User
     deleteUser(req, res) {
-        deleteOne()
+        User.deleteOne()
             .then(({ thoughts }) => {
                 return Thought.updateMany(
                     { _id: { $in: thoughts } },
