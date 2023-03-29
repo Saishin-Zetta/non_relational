@@ -1,2 +1,3 @@
 # non_relational
-using a no sql database to complete the assignment
+Here is the link to the video: https://drive.google.com/file/d/12sn5j_yVsjgPN6gUnPQ-biAqWdEU81n4/view
+
