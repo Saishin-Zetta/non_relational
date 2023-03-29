@@ -30,21 +30,18 @@ module.exports = {
 
 
     // Create a new thought 
-    createThought(req, res) {
+     async createThought(req, res) {
         try {
             // Create a new thought using the request body
-            const newThought = Thought.create(req.body);
+            const newThought = await Thought.create(req.body);
 
             // Find the user with the associated username
-            const currentUser = User.findOne({ username: req.body.username });
+            const currentUser = await User.findOne({ username: req.body.username });
 
             if (!currentUser) {
                 return res.status(404).json({ message: "User not found" });
             }
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json(err);
-        }            
+        
             // Push the thought's _id to the user's thoughts array
             currentUser.thoughts.push(newThought._id);
 
@@ -53,6 +50,11 @@ module.exports = {
 
             // Return the created thought
             return res.status(201).json(newThought);
+            
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json(err);
+        }            
     },
 
     // updating thought
